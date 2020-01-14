@@ -1,0 +1,36 @@
+name: Main
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      run: actions/checkout@v2
+    - name: Checkout Submodules
+      shell: bash
+      run: |
+        auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+        git submodule sync --recursive
+        git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.6.7'
+        architecture: 'x64'
+    - name: before install
+      run: |
+        uname -s 
+        rm src/{lexer,parser}.{c,h}
+        sed -i.bak '/^AM_INIT_AUTOMAKE(\[-Wno-portability 1\.14\])$/s/14/11/' modules/oniguruma/configure.ac
+    - run: |
+        apt-get update && \
+        apt-get install -y \
+            flex \
+            bison \
+            libtool \
+            autoconf \
+            valgrind \
+            automake 
+
+      
