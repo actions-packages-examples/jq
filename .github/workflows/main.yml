@@ -14,15 +14,20 @@ jobs:
         auth_header="$(git config --local --get http.https://github.com/.extraheader)"
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-    - uses: actions/setup-python@v1
-      with:
-        python-version: '3.6.9'
-        architecture: 'x64'
     - name: before install
       run: |
         uname -s 
         rm src/{lexer,parser}.{c,h}
         sed -i.bak '/^AM_INIT_AUTOMAKE(\[-Wno-portability 1\.14\])$/s/14/11/' modules/oniguruma/configure.ac
+
     - name: install linux deps
       run: |
         sudo -E apt-get -yq --no-install-suggests --no-install-recommends --allow-downgrades --allow-remove-essential --allow-change-held-packages install valgrind bison automake
+
+    # pyenv isn't installed in GitHub-hosted runners.
+    # https://github.com/pyenv/pyenv-installer#using-pyenv-installer-on-travis-ci
+    - name: install pyenv
+      run: |
+        curl https://pyenv.run | bash
+        echo "::add-path::$HOME/.pyenv/bin:$PATH"
+        pyenv install 3.6.7
