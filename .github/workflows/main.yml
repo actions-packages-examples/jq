@@ -25,4 +25,4 @@ jobs:
         sed -i.bak '/^AM_INIT_AUTOMAKE(\[-Wno-portability 1\.14\])$/s/14/11/' modules/oniguruma/configure.ac
     - name: install linux deps
       run: |
-        sudo -E apt-get -yq --no-install-suggests --no-install-recommends --force-yes install valgrind bison automake
+        sudo -E apt-get -yq --no-install-suggests --no-install-recommends --allow-downgrades --allow-remove-essential --allow-change-held-packages install valgrind bison automake
