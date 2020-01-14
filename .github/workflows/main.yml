@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      run: actions/checkout@v2
+      uses: actions/checkout@v2
     - name: Checkout Submodules
       shell: bash
       run: |
@@ -23,7 +23,8 @@ jobs:
         uname -s 
         rm src/{lexer,parser}.{c,h}
         sed -i.bak '/^AM_INIT_AUTOMAKE(\[-Wno-portability 1\.14\])$/s/14/11/' modules/oniguruma/configure.ac
-    - run: |
+    - name: install linux deps
+      run: |
         apt-get update && \
         apt-get install -y \
             flex \
@@ -32,5 +33,3 @@ jobs:
             autoconf \
             valgrind \
             automake 
-
-      
